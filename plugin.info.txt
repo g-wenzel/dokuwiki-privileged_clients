@@ -1,0 +1,7 @@
+base ipgroup
+author Sascha Bendix, Marcel Pennewiß, Peter Große, Jonas Licht
+email webserver@fem.tu-ilmenau.de
+date 2021-04-18
+name IPGroup Action Plugin
+desc Allows administrators to map (anonymous) users from specified networks to a single group.
+url https://www.dokuwiki.org/plugin:ipgroup
