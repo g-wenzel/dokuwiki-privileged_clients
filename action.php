@@ -1,12 +1,9 @@
 <?php
 /**
- * IPGroup Plugin
+ * Remote Host Group Plugin
  *
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * @author     Sascha Bendix <sascha.bendix@localroot.de>
- * @author     Marcel Pennewiss <opensource@pennewiss.de>
- * @author     Peter Grosse <pegro@fem-net.de>
- * @author     Jonas Licht <jonas.licht@fem.tu-ilmenau.de>
+ * @author     Gregor Wenzel <gregor.wenzel@charite.de>
  */
 
 if(!defined('DOKU_INC')) die();
@@ -14,8 +11,11 @@ if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
 
 require_once(DOKU_PLUGIN.'action.php');
 
-class action_plugin_ipgroup extends DokuWiki_Action_Plugin {
+class action_plugin_remotehostgroup extends DokuWiki_Action_Plugin {
+    public function __construct() {
 
+        $this->permitted_domain = $this->getConf('permitted_domain');
+    }
     /**
      * Register event handlers
      */
@@ -24,76 +24,27 @@ class action_plugin_ipgroup extends DokuWiki_Action_Plugin {
     }
 
     function start(&$event, $param) {
-		// get remote ip when user is using a proxy
-		$ip = clientIP(true);
-
+		// get remote hostname
+		//$permitted_domain=".charite.de";
+        $remote_host=$_SERVER['REMOTE_HOST'];
 		// read config file or create
-		$filecontent = @file(DOKU_CONF.'ipgroup.conf', FILE_SKIP_EMPTY_LINES);
-		if ($filecontent === false) { $filecontent = array(); }
-		
-		// check current ip against each network-definition
-		foreach ($filecontent as $line) {
-			// seperate network and group and trim spaces
-			list($network,$group) = explode(';', $line);
-			$network = rtrim($network);
-			$group = rtrim($group);
-
-			// seperate cidr-suffix from network
-			$network_bits = substr($network,strpos($network,'/')+1);
-
-			// only go further if the acces is done via the same ip version then the network we are currently looking at
-			if (filter_var($network_address,FILTER_VALIDATE_IP,FILTER_FLAG_IPV4) == filter_var($ip,FILTER_VALIDATE_IP,FILTER_FLAG_IPV4)
-				|| (filter_var($network_address,FILTER_VALIDATE_IP,FILTER_FLAG_IPV6) == filter_var($ip,FILTER_VALIDATE_IP,FILTER_FLAG_IPV6))) {
-				
-				// check if ip matches network
-				if ($this->ip2pton($ip."/".$network_bits) === $this->ip2pton($network)) {
-				    // add group to list
-				    $event->data['groups'][] = $group;
-				}
-			}
-		}
-    }
-    
-    /**
-     * calc ip-adress to in_addr-representation
-     * @link http://www.php.net/manual/de/function.inet-pton.php#93501 source and idea 
-     */
-    function ip2pton($ipaddr) {
-
-        // Strip out the netmask, if there is one.
-        $cx = strpos($ipaddr, '/');
-        if ($cx)
-        {
-            $subnet = (int)(substr($ipaddr, $cx+1));
-            $ipaddr = substr($ipaddr, 0, $cx);
-        }
-        else $subnet = null; // No netmask present
-
-        // Convert address to packed format
-        $addr = inet_pton($ipaddr);
-
-        // Convert the netmask
-        if (is_integer($subnet))
-        {
-            // Maximum netmask length = same as packed address
-            $len = 8*strlen($addr);
-            if ($subnet > $len) $subnet = $len;
- 
-            // Create a hex expression of the subnet mask
-            $mask  = str_repeat('f', $subnet>>2);
-            switch($subnet & 3)
-            {
-                case 3: $mask .= 'e'; break;
-                case 2: $mask .= 'c'; break;
-                case 1: $mask .= '8'; break;
+        if (str_ends_with($remote_host,$this->permitted_domain)) {
+            $filecontent = @file(DOKU_CONF.'remote_host_group.conf', FILE_SKIP_EMPTY_LINES);
+            if ($filecontent === false) { $filecontent = array(); }
+            $remote_host=rtrim($remote_host,".".$this->permitted_domain);
+            // check current hostname against each known hostname
+            foreach ($filecontent as $line) {
+                // seperate network and group and trim spaces
+                list($hostname,$group) = explode(';', $line);
+                $hostname = rtrim($hostname);
+                $group = rtrim($group);
+                // check if host is in list
+                if ($hostname == $remote_host) {
+                    // add group to list
+                    $event->data['groups'][] = $group;
+                }
+                
             }
-            $mask = str_pad($mask, $len>>2, '0');
-
-            // Packed representation of netmask
-            $mask = pack('H*', $mask);
         }
-
-        // Return logical and of addr and mask
-	    return ($addr & $mask);
     }
 }

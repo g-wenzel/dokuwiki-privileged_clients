@@ -1,3 +1,5 @@
-===== Add Network =====
+===== Add Hostname =====
 
-Please specify a network in the following format: IP/Significant Bits (e.g.: 192.168.0.0/24, 2001:DB8:AAAA::/48)
+Please specify a hostname as name of the computer in the network. 
+If your remote host name is mycomputer.myorganization.org, please just specify "mycomputer".
+

@@ -3,15 +3,15 @@
  * english language file
  */
 
-$lang['menu']       = 'IPGroup Manager';
+$lang['menu']       = 'Remote Host Group Manager';
 
-$lang['noips']      = 'No networks are mapped to any group.';
+$lang['nohosts']      = 'No remote hosts are mapped to any group.';
 
-$lang['invalid_ip'] = 'Invalid Network';
-$lang['already']    = 'Network/group-mapping is already in list';
-$lang['failed']     = 'Could not remove network/group-mapping from the list';
+$lang['invalid_host'] = 'Invalid Hostname';
+$lang['already']    = 'Hostname/group-mapping is already in list';
+$lang['failed']     = 'Could not remove hostname/group-mapping from the list';
 
-$lang['network']    = 'Network';
+$lang['remote_hostname']    = 'Hostname';
 $lang['user']       = 'Username';
 $lang['group']      = 'Group';
 $lang['date']       = 'Last Login';
