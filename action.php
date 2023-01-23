@@ -38,7 +38,7 @@ class action_plugin_remotehostgroup extends DokuWiki_Action_Plugin {
                 $hostname = rtrim($hostname);
                 $group = rtrim($group);
                 // check if host is in list
-                if ($hostname == $remote_host) {
+                if (strcasecmp($hostname,$remote_host) == 0) {
                     // add group to list
                     $event->data['groups'][] = $group;
                 }
