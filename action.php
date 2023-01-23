@@ -30,7 +30,7 @@ class action_plugin_remotehostgroup extends DokuWiki_Action_Plugin {
         if (str_ends_with($remote_host,$this->permitted_domain)) {
             $filecontent = @file(DOKU_CONF.'remote_host_group.conf', FILE_SKIP_EMPTY_LINES);
             if ($filecontent === false) { $filecontent = array(); }
-            $remote_host=rtrim($remote_host,".".$this->permitted_domain);
+            $remote_host=str_ireplace(".".$this->permitted_domain,"",$remote_host);
             // check current hostname against each known hostname
             foreach ($filecontent as $line) {
                 // seperate network and group and trim spaces
