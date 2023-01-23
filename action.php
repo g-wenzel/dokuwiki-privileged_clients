@@ -25,7 +25,6 @@ class action_plugin_remotehostgroup extends DokuWiki_Action_Plugin {
 
     function start(&$event, $param) {
 		// get remote hostname
-		//$permitted_domain=".charite.de";
         $remote_host=$_SERVER['REMOTE_HOST'];
 		// read config file or create
         if (str_ends_with($remote_host,$this->permitted_domain)) {
